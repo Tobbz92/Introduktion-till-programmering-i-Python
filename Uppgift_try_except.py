@@ -12,7 +12,7 @@ def calculate(operand_1, operator, operand_2):
         return operand_1 - operand_2
     if operator == '*':
         return operand_1 * operand_2
-    if operator == '/':
+    if operator == '/': 
         return operand_1 / operand_2
     if operator == '%':
         return operand_1 % operand_2
