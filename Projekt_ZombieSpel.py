@@ -36,23 +36,42 @@ def input_valid_int(fråga, feltext, min, max):
         if str.isdigit() and min <= int(str) <= max:
             return int(str)  # Korrekt tal, returnera värdet
         print(feltext)
-
-print('-' * len('För att klara spelet behöver du svara rätt på alla frågor och undvika Zombisarna!)'))
-print('Välkomen till Zombie spelet!')
+lenght = len('För att klara spelet behöver du svara rätt på alla frågor och undvika Zombisarna!)')
+print('-' * lenght)
+print('Välkommen till Zombie spelet!')
 print('För att klara spelet behöver du svara rätt på alla frågor och undvika Zombisarna!)')
-print('-' * len('För att klara spelet behöver du svara rätt på alla frågor och undvika Zombisarna!)'))
+print('-' * lenght)
+
 
 no_questions = int(input(f'Hur många frågor vill du ha? (12-39 st) '))
+try:
+    if 2 < no_questions < 40:
+        pass
+except ValueError:
+    print('Felaktig inmatning')
+
 no_doors = Door(no_questions)
 table = int(input(f'Vilken tabell vill du öva på? (2-12) '))
+try:
+    if 1 < table < 13:
+        pass
+except ValueError:
+    print('Felaktig inmatning')
+
 operator = input(f'Vilken faktor vill du öva på? ( *, // eller %) ')
+try:
+    if operator in ['*', '//', '%']:
+        pass
+except ValueError:
+    print('Felaktig inmatning')
 
 keep_playing = True
 while keep_playing:
+
     zombie_door = no_doors.zombie_door
     current_question = 1
     random_number = randint(0, 12)
-    print(f'Fråga {current_question} av {no_questions}: Vad blir {random_number}{operator}{table}?')
+    print(f'Fråga {current_question} av {no_questions}: Vad blir {random_number}{operator}{table}?') 
     answer = input('Ditt svar: ')
     print(f'Vilken dörr vill du välja? (1-{no_questions}) ')
     chosen_door = int(input('Ditt val: '))
@@ -61,8 +80,19 @@ while keep_playing:
         no_doors.no_doors -= 1
         print('Rätt svar!') 
         print(f'Zombien var bakom dörr: {zombie_door}')
+        zombie_door = randint(0, no_doors.no_doors - 1)
     elif answer == str(eval(f'{random_number}{operator}{table}')) and chosen_door == zombie_door:
         print('Rätt svar men Zombien åt upp dig!')
+    elif current_question == no_questions and chosen_door != zombie_door:
+        print('Grattis, du klarade spelet!')
+        print(f'Zombien var bakom dörr: {zombie_door}')
+        fråga = "Vill du spela igen (j/n)? "
+        svar = input_valid_str(fråga, "Ange giltigt svar!", ('j', 'n'))
+        if svar == 'n':
+            keep_playing = False
+            print('Tack för att du spelade!')
+        else:
+            print('Okej, vi kör igen!')
     else:
         print('Fel svar!')
         print(f'Zombien var bakom dörr: {zombie_door}')
