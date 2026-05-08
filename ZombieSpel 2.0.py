@@ -46,10 +46,6 @@ class Question:
 
             if self.asked_question.count(self.question) < max_times:
                 self.asked_question.append(self.question)
-                self.asked_question.sort()
-                return self.question
-            if self.asked_question.count(self.question) >= max_times:
-                self.question = f"{self.number}{self.operator}{self.table}"
                 return self.question
     
     # Hanterar svaret på frågan
@@ -148,6 +144,7 @@ while play_again:
     else:
         ask_new_settings = game_won
 
-    question_list = question.asked_question
-    print('Ställda frågor:', question_list)
+    # Skriver ut de ställda frågorna för att kontrollera att de inte ställdes för många gånger.
+    # question_list = question.asked_question
+    # print('Ställda frågor:', question_list)
 

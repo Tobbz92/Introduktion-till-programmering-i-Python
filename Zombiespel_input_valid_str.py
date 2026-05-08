@@ -10,63 +10,18 @@ class Door:
         self.doors = [0] * no_doors  # Skapar en lista
         self.zombie_door = randint(1, no_doors)  # Väljer en dörr för zombie
 
+# class Zombie:
+    # def __init__(self, door_number):
+        # self.door_number = randint(1, no_questions - 1)
+
 class Question:
     def __init__(self, table, operator):
         self.table = table
         self.operator = operator
-        self.asked_question = []
-
-        #self.random_number = randint(0, 12)  # Väljer en siffra mellan 0 och 12
-        #self.question = f'{self.random_number}{self.operator}{self.table}'  # Skapar frågan
-        #self.current_question = current_question
-        #while self.current_question <= self.no_questions:
-            #self.current_question += 1
-    
-    def max_repeated_questions(self, no_questions):
-        if 12 <= no_questions <= 13:
-            return 1
-        elif 14 <= no_questions <= 26:
-            return 2
-        elif 27 <= no_questions <= 39:
-            return 3
-    
-    def get_question(self, no_questions):
-        max_times = self.max_repeated_questions(no_questions)
-
-        valid_question = False
-        question = None
-
-        while not valid_question:
-            random_number = randint(0, 12)
-            question = f'{random_number}{self.operator}{self.table}'
-
-            count = self.asked_question.count(question)
-            if count < max_times:
-                self.asked_question.append(question)
-                valid_question = True
-        
-        return question
-
-    # Hanterar hur många gånger en fråga har kommit och genererar en ny fråga om den har kommit för många gånger.
-    def asked_questions(self, no_questions):
-        self.asked_questions = []
-        if 12 <= no_questions <= 13 and self.question not in self.asked_questions:
-            self.asked_questions.append(self.question)
-            return question
-        elif 14 <= no_questions <= 26:
-            self.asked_question.count(self.question)
-            if int(self.question) > 2:
-                self.question = f'{self.random_number}{self.operator}{self.table}'
-            else:
-                self.asked_questions.append(self.question)
-                return question
-        elif 27 <= no_questions <= 39:
-            self.asked_question.count(self.question)
-            if int(self.question) > 3:
-                self.question = f'{self.random_number}{self.operator}{self.table}'
-            else:
-                self.asked_questions.append(self.question)
-                return question
+        # self.random_number = randint(0, 12)  # Väljer en siffra mellan 0 och 12
+        self.current_question = current_question
+        while self.current_question <= self.no_questions:
+            self.current_question += 1
 
 def input_valid_str(fråga, feltext, möjliga_svar):
     svar = input(fråga)
@@ -79,7 +34,7 @@ def input_valid_int(fråga, feltext, min, max):
         str = input(fråga)
         if str.isdigit() and min <= int(str) <= max:
             return int(str)  # Korrekt tal, returnera värdet
-        #print(feltext)
+        print(feltext)
 
 lenght = len('För att klara spelet behöver du svara rätt på alla frågor och undvika Zombisarna!)')
 print('-' * lenght)
@@ -90,41 +45,16 @@ print('-' * lenght)
 # Huvudprogrammet, inlindat i en play_again loop för att hantera om spelaren vill spela igen
 play_again = True
 while play_again:
-    #asked_questions = []
-    
+
     # Frågar om antal frågor, tabell och räknesätt och kontrollerar att inmatningen är giltig
-    valid = False
-    while not valid:
-        try:
-            no_questions = int(input(f'Hur många frågor vill du ha? (12-39 st) '))
-            if 12 <= no_questions <= 39:
-                valid = True
-            else:
-                print('Felaktig inmatning')
-        except ValueError:
-            print('Felaktig inmatning')
+    fråga = input(f'Hur många frågor vill du ha? (12-39 st) ')
+    svar = input_valid_int(fråga, "Ange giltigt svar!", 12, 39)
 
-    valid = False
-    while not valid:
-        try:
-            table = int(input(f'Vilken tabell vill du öva på? (2-12) '))
-            if 2 <= table <= 12:
-                valid = True
-            else:
-                print('Felaktig inmatning')
-        except ValueError:
-            print('Felaktig inmatning')
+    fråga = input(f'Vilken tabell vill du öva på? (2-12) ')
+    svar = input_valid_int(fråga, "Ange giltigt svar!", 2, 12)
 
-    valid = False
-    while not valid:
-        try:
-            operator = input(f'Vilken faktor vill du öva på? ( *, // eller %) ')
-            if operator in ['*', '//', '%']:
-                valid = True
-            else:
-                print('Felaktig inmatning')
-        except ValueError:
-            print('Felaktig inmatning')
+    fråga = input(f'Vilken faktor vill du öva på? ( *, // eller %) ')
+    svar = input_valid_str(fråga, "Ange giltigt svar!", ['*', '//', '%'])
 
     no_doors = Door(no_questions)
     current_question = 1
@@ -132,24 +62,18 @@ while play_again:
 
     while keep_playing:
         zombie_door = no_doors.zombie_door
-        #random_number = randint(0, 12)
-        question = Question.get_question(question, no_questions)
+        random_number = randint(0, 12)
 
         # Ställer frågan och kontrollerar att svaret är ett heltal
-        print(f'Fråga {current_question} av {no_questions}: Vad blir {question}?')
+        print(f'Fråga {current_question} av {no_questions}: Vad blir {random_number}{operator}{table}?') 
+        valid_answer = False
         while not valid_answer:
             answer = input('Ditt svar: ')
             if answer.isdigit():
                 valid_answer = True
             else:
                 print('Felaktig inmatning, ange ett heltal.')
-        random_number, operator, table = question.split()
         correct_answer = str(eval(f'{random_number}{operator}{table}'))
-
-        # Om spelaren svarar fel får man inte välja dörr och spelaren får frågan om att spela igen
-        if answer != correct_answer:
-            print(f'Fel svar!')
-            keep_playing = False
 
         # Frågar om vilken dörr och kontrollerar att det är ett heltal och inom rätt intervall
         print(f'Vilken dörr vill du välja? (1-{no_doors.no_doors}) ')
