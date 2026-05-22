@@ -17,54 +17,36 @@ def input_valid_int(prompt, error_text, min_value, max_value):
         else:
             print(error_text)
 
-# Klass för att hantera frågor
-class Question:
-    # Initierar klassen med tabell, operator och en lista för att hålla koll på ställda frågor
-    def __init__(self, table, operator):
-        self.table = table
-        self.operator = operator
-        self.number = randint(0, 12)  # Väljer en siffra mellan 0 och 12
-        self.question = f'{self.number}{self.operator}{self.table}'  # Skapar
-        self.asked_question = []
-    
-    # Sätter hur många gånger en fråga får upprepas baserat på antalet valda frågor
-    def max_repeated_questions(self, no_questions):
-        if 12 <= no_questions <= 13:
-            return 1
-        elif 14 <= no_questions <= 26:
-            return 2
-        elif 27 <= no_questions <= 39:
-            return 3
 
-    # Genererar en ny fråga och kontrollerar att den inte har ställts för många gånger
-    def get_question(self, no_questions):
-        max_times = self.max_repeated_questions(no_questions)
+# Sätter hur många gånger en fråga får upprepas baserat på antalet valda frågor
+def max_repeated_questions(no_questions):
+    if 12 <= no_questions <= 13:
+        return 1
+    elif 14 <= no_questions <= 26:
+        return 2
+    elif 27 <= no_questions <= 39:
+        return 3
 
-        while True:
-            self.number = randint(0, 12)
-            self.question = f"{self.number}{self.operator}{self.table}"
+# Genererar en ny fråga och kontrollerar att den inte har ställts för många gånger
+def get_question(table, operator, asked_question, no_questions):
+    max_times = max_repeated_questions(no_questions)
 
-            if self.asked_question.count(self.question) < max_times:
-                self.asked_question.append(self.question)
-                return self.question
-    
-    # Hanterar svaret på frågan
-    def get_correct_answer(self):
-        if self.operator == '*':
-            return self.number * self.table
-        elif self.operator == '//':
-            return self.number // self.table
-        elif self.operator == '%':
-            return self.number % self.table
+    while True:
+        number = randint(0, 12)
+        question = f"{number}{operator}{table}"
 
-    def __str__(self):
-        return self.question
+        if asked_question.count(question) < max_times:
+            asked_question.append(question)
+            return question, number
 
-# Klass för att hantera dörrar och zombiens position   
-class Door:
-    def __init__(self, no_doors):
-        self.no_doors = no_doors
-        self.zombie_door = randint(1, no_doors)
+# Hanterar svaret på frågan
+def get_correct_answer(table, operator, number):
+    if operator == '*':
+        return number * table
+    elif operator == '//':
+        return number // table
+    elif operator == '%':
+        return number % table
 
 # Huvudprogrammet, inlindat i en play_again loop för att hantera om spelaren vill spela igen
 play_again = True
@@ -80,22 +62,23 @@ while play_again:
         if answer_operator in ['//', '%']:
             answer_table = input_valid_int('Välj en divisor mellan 2-5: ', 'Ange giltigt svar!', 2, 5)
             
-        if answer_operator  == '*':
+        elif answer_operator  == '*':
             answer_table = input_valid_int('Vilken tabell vill du öva på? (2-12) ', 'Ange giltigt svar!', 2, 12)
         
-
+    # Hanterar spelets gång och loopar samma tabell, operator och antal frågor om spelaren väljer att spela igen, ej vinst 
     keep_playing = True
     current_question = 1
-    no_doors = Door(answer_scope)
+    no_doors = answer_scope
+    zombie_door = randint(1, no_doors)
     game_won = False
-    question = Question(answer_table, answer_operator)
+    asked_question = []
 
     # Loop som hanterar spelets gång, ställer frågor och hanterar dörrval
     while keep_playing and current_question <= answer_scope:
-        question_text = question.get_question(answer_scope)
+        question_text, number = get_question(answer_table, answer_operator, asked_question, answer_scope)
         valid_answer = False
 
-        print(f'Fråga {current_question} av {answer_scope}: Vad blir {question}?')
+        print(f'Fråga {current_question} av {answer_scope}: Vad blir {question_text}?')
 
         while not valid_answer:
             answer = input('Ditt svar: ')
@@ -104,7 +87,7 @@ while play_again:
             else:
                 print('Felaktig inmatning, ange ett heltal.')
 
-        correct_answer = question.get_correct_answer()
+        correct_answer = get_correct_answer(answer_table, answer_operator, number)
 
         # Kontrollerar svaret och hanterar dörrvalet
         if int(answer) == int(correct_answer):
@@ -113,16 +96,15 @@ while play_again:
                 keep_playing = False
                 game_won = True
             else:
-                zombie_door = no_doors.zombie_door
-                print(f'Vilken dörr vill du välja? (1-{no_doors.no_doors}) ')
+                print(f'Vilken dörr vill du välja? (1-{no_doors}) ')
                 valid_door = False
                 while not valid_door:
                     try:
                         chosen_door = int(input('Ditt val: '))
-                        if 1 <= chosen_door <= no_doors.no_doors:
+                        if 1 <= chosen_door <= no_doors:
                             valid_door = True
                         else:
-                            print(f'Felaktig inmatning, välj en dörr mellan 1 och {no_doors.no_doors}')
+                            print(f'Felaktig inmatning, välj en dörr mellan 1 och {no_doors}')
                     except ValueError:
                         print('Felaktig inmatning, ange ett heltal.')
 
@@ -131,9 +113,9 @@ while play_again:
                     print('Rätt svar!')
                     print(f'Zombien var bakom dörr: {zombie_door}')
                     current_question += 1
-                    no_doors.no_doors -= 1
-                    if no_doors.no_doors >= 1:
-                        no_doors.zombie_door = randint(1, no_doors.no_doors)
+                    no_doors -= 1
+                    if no_doors >= 1:
+                        zombie_door = randint(1, no_doors)
                 else:
                     print('Rätt svar men Zombien åt upp dig!')
                     keep_playing = False
@@ -149,7 +131,4 @@ while play_again:
     else:
         ask_new_settings = game_won
 
-    # Skriver ut de ställda frågorna för att kontrollera att de inte ställdes för många gånger.
-    #question_list = question.asked_question
-    #print('Ställda frågor:', question_list)
-
+# Använd funktionen input_valid_int för den matematiska frågan och valet av dörr. 
