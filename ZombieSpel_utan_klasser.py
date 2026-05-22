@@ -2,9 +2,9 @@ from random import randint
 
 
 # Hanterar felinmatning av frågor som text och kontrollerar möjliga svar
-def input_valid_str(prompt, error_text, möjliga_svar):
+def input_valid_str(prompt, error_text, mojliga_svar):
     answer = input(prompt)
-    while answer not in möjliga_svar:
+    while answer not in mojliga_svar:
         answer = input(f'{error_text}\n{prompt}')
     return answer
 
@@ -76,17 +76,7 @@ while play_again:
     # Loop som hanterar spelets gång, ställer frågor och hanterar dörrval
     while keep_playing and current_question <= answer_scope:
         question_text, number = get_question(answer_table, answer_operator, asked_question, answer_scope)
-        valid_answer = False
-
-        print(f'Fråga {current_question} av {answer_scope}: Vad blir {question_text}?')
-
-        while not valid_answer:
-            answer = input('Ditt svar: ')
-            if answer.isdigit():
-                valid_answer = True
-            else:
-                print('Felaktig inmatning, ange ett heltal.')
-
+        answer = input_valid_int(f'Fråga {current_question} av {answer_scope}: Vad blir {question_text}?', 'Felaktig inmatning, ange ett heltal.', 0, 144)
         correct_answer = get_correct_answer(answer_table, answer_operator, number)
 
         # Kontrollerar svaret och hanterar dörrvalet
@@ -96,17 +86,7 @@ while play_again:
                 keep_playing = False
                 game_won = True
             else:
-                print(f'Vilken dörr vill du välja? (1-{no_doors}) ')
-                valid_door = False
-                while not valid_door:
-                    try:
-                        chosen_door = int(input('Ditt val: '))
-                        if 1 <= chosen_door <= no_doors:
-                            valid_door = True
-                        else:
-                            print(f'Felaktig inmatning, välj en dörr mellan 1 och {no_doors}')
-                    except ValueError:
-                        print('Felaktig inmatning, ange ett heltal.')
+                chosen_door = input_valid_int(f'Vilken dörr vill du välja? (1-{no_doors}) ', f'Felaktig inmatning, välj en dörr mellan 1 och {no_doors}', 1, no_doors)
 
                 # Kontrollerar om spelaren valde rätt dörr och uppdaterar spelet
                 if chosen_door != zombie_door:
@@ -130,5 +110,3 @@ while play_again:
         play_again = False
     else:
         ask_new_settings = game_won
-
-# Använd funktionen input_valid_int för den matematiska frågan och valet av dörr. 
